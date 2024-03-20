@@ -1,24 +1,33 @@
-import { API_URL } from '@/domain/config'
-import { postsMapper } from '@/mapper/posts.mappers'
-import mdToHTML from '@/utils/snarkdown'
-import Link from 'next/link'
+import { postsMapper } from "@/mapper/posts.mappers"
+import { API_URL } from "@/domain/config"
+import mdToHTML from "@/utils/snarkdown"
+import { useEffect, useState } from "react";
 
-const getPosts = async () => {
-  const res = await fetch(`${API_URL}/posts?populate=*`)
-  if (!res.ok) {
-    throw new Error('Algo pasó!')
+export const metadata = {
+  title: "Bocato Blog",
+  description: "Recetas de Bocato",
+};
+
+const Home = ({ posts }) => {
+  const [posts, setPosts] = useState([])
+  useEffect(async () => {
+    const p = await getPosts()
+    console.log(p)
+  }, [])
+
+  const getPosts = async () => {
+    const res = await fetch(`${API_URL}/posts?populate=*`)
+    if (!res.ok) {
+      throw new Error('Algo pasó!')
+    }
+    const { data } = await res.json()
+    const dataMapped = data.map(postsMapper)
+
+    return dataMapped
   }
-  const { data } = await res.json()
-  const dataMapped = data.map(postsMapper)
-
-  return dataMapped
-}
-
-export default async function Home() {
-  const posts = await getPosts()
 
   return (
-    <div className="bg-white py-24 sm:py-24">
+    <div className="bg-white py-24 sm:py-32">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
 
         <div className="mx-auto max-w-2xl lg:mx-0">
@@ -37,14 +46,14 @@ export default async function Home() {
               <div className="flex max-w-xl flex-col items-start justify-between">
                 <div className="flex items-center gap-x-4 text-xs">
                   <time dateTime="2020-03-16" className="text-gray-500">{obj.publishedAt}</time>
-                  <Link href='/category' className="relative z-10 rounded-full bg-gray-50 px-3 py-1.5 font-medium text-gray-600 hover:bg-gray-100">{obj.category.name}</Link>
+                  <a href="#" className="relative z-10 rounded-full bg-gray-50 px-3 py-1.5 font-medium text-gray-600 hover:bg-gray-100">{obj.category.name}</a>
                 </div>
                 <div className="group relative">
                   <h3 className="mt-3 text-lg font-semibold leading-6 text-gray-900 group-hover:text-gray-600">
-                    <Link href={`/${obj.slug}`}>
+                    <a href="#">
                       <span className="absolute inset-0"></span>
                       {obj.title}
-                    </Link>
+                    </a>
                   </h3>
                   <p
                     className="mt-5 line-clamp-3 text-sm leading-6 text-gray-600"
@@ -56,10 +65,10 @@ export default async function Home() {
                     <p className="font-semibold text-gray-900">
                       <a href="#">
                         <span className="absolute inset-0"></span>
-                        {obj.author?.name}
+                        Tania Timaná
                       </a>
                     </p>
-                    <p className="text-gray-600">{obj.author?.role}</p>
+                    <p className="text-gray-600">Co-Founder / CTO</p>
                   </div>
                 </div>
               </div>
@@ -70,3 +79,5 @@ export default async function Home() {
     </div>
   )
 }
+
+export default Home

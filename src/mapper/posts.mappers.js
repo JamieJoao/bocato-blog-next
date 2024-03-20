@@ -1,4 +1,4 @@
-import { STRAPI_URL } from "@/app/config"
+import { STRAPI_URL } from "@/domain/config"
 
 export const postsMapper = ({ id, attributes }) => {
   const {
@@ -10,12 +10,13 @@ export const postsMapper = ({ id, attributes }) => {
     publishedAt,
     slug,
     title,
+    author,
   } = attributes
 
   return {
     id,
     title,
-    images: image.data.map(obj => `${STRAPI_URL + obj.attributes.url}`),
+    images: image.data?.map(obj => `${STRAPI_URL + obj.attributes.url}`),
     date,
     category: {
       id: category.data.id,
@@ -25,6 +26,12 @@ export const postsMapper = ({ id, attributes }) => {
     content,
     contentShort: content.substring(0, 130),
     locale,
-    publishedAt
+    publishedAt,
+    author: {
+      id: author.data.id,
+      name: author.data.attributes.firstName,
+      role: author.data.attributes.role,
+      photo: author.data.attributes.photo,
+    }
   }
 }
