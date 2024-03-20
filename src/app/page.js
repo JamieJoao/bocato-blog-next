@@ -1,18 +1,6 @@
-import { API_URL } from '@/domain/config'
-import { postsMapper } from '@/mapper/posts.mappers'
 import mdToHTML from '@/utils/snarkdown'
+import { getPosts } from '@/services/getPosts'
 import Link from 'next/link'
-
-const getPosts = async () => {
-  const res = await fetch(`${API_URL}/posts?populate=*`)
-  if (!res.ok) {
-    throw new Error('Algo pasó!')
-  }
-  const { data } = await res.json()
-  const dataMapped = data.map(postsMapper)
-
-  return dataMapped
-}
 
 export default async function Home() {
   const posts = await getPosts()
